@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ЭОР: Виктимность | Фрагмент урока ОБЗР</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #F4F6F9;
+            --surface: #FFFFFF;
+            --primary: #1E3A8A;      /* Глубокий синий (ОБЗР) */
+            --primary-light: #EFF6FF;
+            --accent: #EA580C;       /* Оранжевый (Внимание/Спасение) */
+            --accent-light: #FFF7ED;
+            --success: #059669;
+            --danger: #DC2626;
+            --text-main: #111827;
+            --text-sec: #4B5563;
+            --border: #E5E7EB;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --radius: 12px;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+
+        /* ШАПКА И ПАНЕЛЬ УПРАВЛЕНИЯ */
+        .top-bar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+        .top-bar h1 { font-size: 1.1rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        .top-bar h1 span.badge { background: var(--accent); color: white; font-size: 0.7rem; padding: 4px 8px; border-radius: 20px; font-weight: 600; text-transform: uppercase; }
+        
+        .controls { display: flex; gap: 12px; align-items: center; }
+        .timer { font-family: monospace; font-size: 1.2rem; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 6px 12px; border-radius: 8px; }
+        
+        .btn-control {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            touch-action: manipulation;
+        }
+        .btn-control:hover { background: #1E40AF; }
+        .btn-control.outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
+        .btn-control.outline.active { background: var(--primary); color: white; }
+
+        /* ОСНОВНОЙ МАКЕТ */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 24px;
+            padding: 24px;
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .content-area { display: flex; flex-direction: column; gap: 24px; }
+        
+        /* ПАНЕЛЬ МЕТОДИСТА (ДЛЯ ЖЮРИ) */
+        .method-panel {
+            background: var(--surface);
+            border: 2px dashed var(--accent);
+            border-radius: var(--radius);
+            padding: 20px;
+            position: sticky;
+            top: 80px;
+            height: fit-content;
+            max-height: calc(100dvh - 100px);
+            overflow-y: auto;
+            display: none; /* Скрыта по умолчанию */
+            box-shadow: var(--shadow);
+        }
+        .method-panel.visible { display: block; animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        
+        .method-panel h3 { color: var(--accent); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;}
+        .method-block { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+        .method-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .method-block h4 { font-size: 0.85rem; color: var(--text-sec); margin-bottom: 4px; font-weight: 600; }
+        .method-block p { font-size: 0.9rem; line-height: 1.5; }
+        .method-block .tag { display: inline-block; background: var(--primary-light); color: var(--primary); font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; margin: 2px 4px 2px 0; font-weight: 500; }
+
+        /* КАРТОЧКИ ЭТАПОВ УРОКА */
+        .stage-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 32px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            display: none;
+            animation: fadeUp 0.4s ease-out;
+        }
+        .stage-card.active { display: block; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        .stage-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .stage-title { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+        .stage-step { background: var(--primary-light); color: var(--primary); font-weight: 700; padding: 6px 12px; border-radius: 20px; font-size: 0.9rem; }
+
+        /* ИНТЕРАКТИВ: СОРТИРОВКА (ЭТАП 2) */
+        .sort-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+        .sort-column {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            min-height: 200px;
+            transition: 0.3s;
+        }
+        .sort-column.highlight { border-color: var(--primary); background: var(--primary-light); }
+        .sort-column h3 { font-size: 1.1rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .sort-column.int h3 { color: var(--primary); }
+        .sort-column.ext h3 { color: var(--accent); }
+        
+        .factor-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; justify-content: center; }
+        .chip {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 10px 16px;
+            border-radius: 24px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            user-select: none;
+            touch-action: manipulation;
+        }
+        .chip:active { transform: scale(0.95); }
+        .chip.selected { background: var(--primary); color: white; border-color: var(--primary); }
+        .chip.correct { background: var(--success); color: white; border-color: var(--success); }
+        .chip.wrong { background: var(--danger); color: white; border-color: var(--danger); }
+
+        /* ИНТЕРАКТИВ: ВЕСЫ БАЛАНСА (ЭТАП 3) */
+        .balance-container { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+        .balance-visual {
+            width: 100%;
+            max-width: 500px;
+            background: var(--bg);
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+        }
+        .balance-bar {
+            width: 100%;
+            height: 24px;
+            background: #E5E7EB;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .balance-fill {
+            height: 100%;
+            width: 50%;
+            background: var(--success);
+            transition: width 0.5s ease, background 0.5s ease;
+            border-radius: 12px;
+        }
+        .balance-markers { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-sec); font-weight: 600; }
+        
+        .sliders-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 600px; }
+        .slider-group { text-align: center; }
+        .slider-group label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.95rem; }
+        .slider-group label.int { color: var(--primary); }
+        .slider-group label.ext { color: var(--accent); }
+        
+        .step-slider {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+        .step-btn {
+            width: 44px; height: 44px; /* iOS friendly */
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: var(--surface);
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            touch-action: manipulation;
+        }
+        .step-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .step-btn.ext.active { background: var(--accent); border-color: var(--accent); }
+
+        .feedback-msg {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+        }
+        .feedback-msg.show { display: block; animation: fadeUp 0.3s; }
+        .feedback-msg.good { background: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0; }
+        .feedback-msg.bad { background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA; }
+
+        /* НАВИГАЦИЯ */
+        .nav-footer { display: flex; justify-content: space-between; margin-top: auto; padding-top: 24px; }
+        .btn-nav {
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            border: none;
+            touch-action: manipulation;
+        }
+        .btn-nav.primary { background: var(--primary); color: white; }
+        .btn-nav.primary:hover { background: #1E40AF; }
+        .btn-nav.ghost { background: transparent; color: var(--text-sec); }
+        .btn-nav:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* АДАПТИВ */
+        @media (max-width: 1024px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .method-panel { position: static; max-height: none; }
+        }
+        @media (max-width: 600px) {
+            .top-bar { padding: 12px 16px; flex-wrap: wrap; gap: 10px; }
+            .top-bar h1 { font-size: 1rem; }
+            .main-layout { padding: 16px; }
+            .stage-card { padding: 20px; }
+            .sort-grid { grid-template-columns: 1fr; }
+            .sliders-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ВЕРХНЯЯ ПАНЕЛЬ -->
+<div class="top-bar">
+    <h1>Матрица Безопасности <span class="badge">ЭОР ОБЗР</span></h1>
+    <div class="controls">
+        <div class="timer" id="timer">15:00</div>
+        <button class="btn-control outline" id="methodToggle" onclick="toggleMethod()">👁 Режим Жюри</button>
+        <button class="btn-control" onclick="resetLesson()">Сброс</button>
+    </div>
+</div>
+
+<!-- ОСНОВНОЙ КОНТЕНТ -->
+<div class="main-layout">
+    <div class="content-area">
+        
+        <!-- ЭТАП 1: МОТИВАЦИЯ И ПОСТАНОВКА ПРОБЛЕМЫ -->
+        <div id="stage1" class="stage-card active">
+            <div class="stage-header">
+                <div class="stage-title">Почему знания не спасают?</div>
+                <div class="stage-step">Этап 1 / 4</div>
+            </div>
+            <p style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 24px;">
+                Уважаемые участники, представьте ситуацию. Два человека знают правила дорожного движения на отлично. Оба переходят дорогу в одном и том же месте. Один переходит безопасно, а второй попадает в ДТП. 
+                <br><br>
+                <strong>Проблемный вопрос:</strong> Если знания правил одинаковы, почему результат разный? Какой скрытый фактор влияет на исход?
+            </p>
+            <div style="background: var(--primary-light); padding: 20px; border-radius: 8px; border-left: 4px solid var(--primary);">
+                <p style="margin: 0; font-weight: 600; color: var(--primary);">
+                    💡 Вывод: Знать правила недостаточно. Важно состояние самого человека и среды. В науке это называется <strong>«Виктимность»</strong> (от лат. victima — жертва).
+                </p>
+            </div>
+            <div class="nav-footer">
+                <button class="btn-nav ghost" disabled>Назад</button>
+                <button class="btn-nav primary" onclick="nextStage(2)">Далее: Изучаем факторы ➔</button>
+            </div>
+        </div>
+
+        <!-- ЭТАП 2: ОТКРЫТИЕ НОВОГО ЗНАНИЯ (ИНТЕРАКТИВ) -->
+        <div id="stage2" class="stage-card">
+            <div class="stage-header">
+                <div class="stage-title">Анатомия виктимности</div>
+                <div class="stage-step">Этап 2 / 4</div>
+            </div>
+            <p style="margin-bottom: 20px;">Виктимность складывается из двух компонентов. Давайте распределим факторы по категориям. <strong>Нажимайте на карточки:</strong> синие — внутренние (предрасположения), оранжевые — внешние (предпосылки).</p>
+            
+            <div class="factor-chips" id="chipContainer">
+                <!-- Чипсы генерируются в JS -->
+            </div>
+
+            <div class="sort-grid" style="margin-top: 24px;">
+                <div class="sort-column int" id="col-int" onclick="dropChip('int')">
+                    <h3>🧍 Предрасположения (Внутренние)</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-sec);">То, что зависит от самого человека</p>
+                    <div id="list-int" style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px;"></div>
+                </div>
+                <div class="sort-column ext" id="col-ext" onclick="dropChip('ext')">
+                    <h3>🌍 Предпосылки (Внешние)</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-sec);">То, что зависит от окружающей среды</p>
+                    <div id="list-ext" style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px;"></div>
+                </div>
+            </div>
+
+            <div class="nav-footer">
+                <button class="btn-nav ghost" onclick="nextStage(1)">⬅ Назад</button>
+                <button class="btn-nav primary" onclick="nextStage(3)">Далее: Закон баланса ➔</button>
+            </div>
+        </div>
+
+        <!-- ЭТАП 3: ПРИМЕНЕНИЕ ЗНАНИЙ (СИМУЛЯТОР) -->
+        <div id="stage3" class="stage-card">
+            <div class="stage-header">
+                <div class="stage-title">Закон компенсации рисков</div>
+                <div class="stage-step">Этап 3 / 4</div>
+            </div>
+            <p style="margin-bottom: 24px;">
+                <strong>Задача:</strong> Удержать индекс безопасности в «Зеленой зоне». 
+                Если вы меняете внутренний фактор (например, устали), вы обязаны компенсировать это изменением внешнего (выбрать более безопасный маршрут).
+            </p>
+
+            <div class="balance-container">
+                <div class="balance-visual">
+                    <div style="font-weight: 700; font-size: 1.2rem; margin-bottom: 8px;">Индекс Безопасности</div>
+                    <div class="balance-bar">
+                        <div class="balance-fill" id="balanceFill"></div>
+                    </div>
+                    <div class="balance-markers">
+                        <span>Критический</span>
+                        <span>Норма</span>
+                        <span>Идеальный</span>
+                    </div>
+                </div>
+
+                <div class="sliders-grid">
+                    <div class="slider-group">
+                        <label class="int">🧍 Внутренний ресурс</label>
+                        <div class="step-slider" id="slider-int">
+                            <button class="step-btn" data-val="1" onclick="setSlider('int', 1)">Низкий</button>
+                            <button class="step-btn active" data-val="2" onclick="setSlider('int', 2)">Средний</button>
+                            <button class="step-btn" data-val="3" onclick="setSlider('int', 3)">Высокий</button>
+                        </div>
+                    </div>
+                    <div class="slider-group">
+                        <label class="ext">🌍 Внешняя среда</label>
+                        <div class="step-slider" id="slider-ext">
+                            <button class="step-btn ext" data-val="1" onclick="setSlider('ext', 1)">Опасная</button>
+                            <button class="step-btn ext active" data-val="2" onclick="setSlider('ext', 2)">Обычная</button>
+                            <button class="step-btn ext" data-val="3" onclick="setSlider('ext', 3)">Безопасная</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feedback-msg" id="feedbackMsg"></div>
+            </div>
+
+            <div class="nav-footer">
+                <button class="btn-nav ghost" onclick="nextStage(2)">⬅ Назад</button>
+                <button class="btn-nav primary" onclick="nextStage(4)">Далее: Рефлексия ➔</button>
+            </div>
+        </div>
+
+        <!-- ЭТАП 4: РЕФЛЕКСИЯ -->
+        <div id="stage4" class="stage-card">
+            <div class="stage-header">
+                <div class="stage-title">Рефлексия и домашнее задание</div>
+                <div class="stage-step">Этап 4 / 4</div>
+            </div>
+            <div style="background: var(--accent-light); padding: 24px; border-radius: var(--radius); border-left: 4px solid var(--accent); margin-bottom: 24px;">
+                <h3 style="color: var(--accent); margin-bottom: 12px;">Главная мысль урока</h3>
+                <p style="font-size: 1.1rem; line-height: 1.6; margin: 0;">
+                    Безопасность в курсе ОБЗР — это не просто знание правил. Это <strong>навык постоянного мониторинга</strong> своего внутреннего состояния и внешней среды. 
+                    <br><br>
+                    <strong>Правило выживания:</strong> Растут внутренние риски ➔ Жестко снижаем внешние. Ужесточается внешняя среда ➔ Мобилизуем внутренние ресурсы.
+                </p>
+            </div>
+            
+            <h3 style="margin-bottom: 12px;">Домашнее задание (дифференцированное):</h3>
+            <ul style="line-height: 1.8; padding-left: 20px;">
+                <li><strong>Базовый уровень:</strong> Выписать 5 внутренних и 5 внешних факторов виктимности для ситуации «Поход в лес».</li>
+                <li><strong>Продвинутый уровень:</strong> Составить «Карту компенсации рисков» для вашего ежедневного пути из школы домой.</li>
+            </ul>
+
+            <div class="nav-footer">
+                <button class="btn-nav ghost" onclick="nextStage(3)">⬅ Назад</button>
+                <button class="btn-nav primary" onclick="finishLesson()">Завершить фрагмент урока ✓</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ПАНЕЛЬ МЕТОДИСТА (ДЛЯ ЖЮРИ) -->
+    <div class="method-panel" id="methodPanel">
+        <h3>🎓 Методическая дорожка</h3>
+        
+        <div id="methodContent">
+            <!-- Динамически заполняется -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // === ДАННЫЕ ДЛЯ ИНТЕРАКТИВА ===
+    const factors = [
+        { text: "Усталость после смены", type: "int" },
+        { text: "Темное время суток", type: "ext" },
+        { text: "Знание приемов самообороны", type: "int" },
+        { text: "Гололед на дороге", type: "ext" },
+        { text: "Содержимое карманов (гаджеты)", type: "int" },
+        { text: "Криминогенность района", type: "ext" },
+        { text: "Стресс и эмоции", type: "int" },
+        { text: "Отсутствие людей вокруг", type: "ext" }
+    ];
+
+    const methodData = {
+        1: {
+            stage: "Мотивация и целеполагание",
+            time: "00:00 - 02:00",
+            uud: ["Личностные: самоопределение", "Регулятивные: целеполагание"],
+            script: "Создание проблемной ситуации. Подводим учеников к пониманию, что знаний правил недостаточно. Вводим термин «Виктимность»."
+        },
+        2: {
+            stage: "Открытие нового знания",
+            time: "02:00 - 07:00",
+            uud: ["Познавательные: анализ, классификация", "Коммуникативные: выражение мыслей"],
+            script: "Эвристическая беседа. Ученики самостоятельно классифицируют факторы риска на внутренние (предрасположения) и внешние (предпосылки). Использование ЭОР для визуализации."
+        },
+        3: {
+            stage: "Применение знаний (Проблемное обучение)",
+            time: "07:00 - 12:00",
+            uud: ["Регулятивные: планирование, прогнозирование", "Познавательные: моделирование"],
+            script: "Моделирование ситуаций. Ученики используют 'Закон компенсации рисков'. Учатся балансировать внутренние и внешние факторы для достижения безопасности."
+        },
+        4: {
+            stage: "Рефлексия и оценивание",
+            time: "12:00 - 15:00",
+            uud: ["Регулятивные: оценка, рефлексия", "Личностные: смыслообразование"],
+            script: "Подведение итогов. Фиксация главного правила. Выставление оценок за работу на уроке. Дифференцированное домашнее задание."
+        }
+    };
+
+    // === СОСТОЯНИЕ ПРИЛОЖЕНИЯ ===
+    let currentStage = 1;
+    let timerSeconds = 15 * 60;
+    let timerInterval;
+    let intVal = 2, extVal = 2;
+    let selectedChip = null;
+
+    // === ИНИЦИАЛИЗАЦИЯ ===
+    document.addEventListener('DOMContentLoaded', () => {
+        startTimer();
+        renderChips();
+        updateMethodPanel();
+        updateBalance();
+    });
+
+    // === ТАЙМЕР ===
+    function startTimer() {
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            if (timerSeconds > 0) {
+                timerSeconds--;
+                const m = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+                const s = (timerSeconds % 60).toString().padStart(2, '0');
+                document.getElementById('timer').textContent = `${m}:${s}`;
+            } else {
+                clearInterval(timerInterval);
+            }
+        }, 1000);
+    }
+
+    // === НАВИГАЦИЯ ===
+    function nextStage(num) {
+        document.querySelectorAll('.stage-card').forEach(c => c.classList.remove('active'));
+        document.getElementById('stage' + num).classList.add('active');
+        currentStage = num;
+        updateMethodPanel();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetLesson() {
+        timerSeconds = 15 * 60;
+        currentStage = 1;
+        nextStage(1);
+        renderChips();
+        document.getElementById('list-int').innerHTML = '';
+        document.getElementById('list-ext').innerHTML = '';
+        intVal = 2; extVal = 2;
+        updateSlidersUI();
+        updateBalance();
+    }
+
+    function finishLesson() {
+        alert("Фрагмент урока завершен. Спасибо за внимание!");
+    }
+
+    // === ПАНЕЛЬ МЕТОДИСТА ===
+    function toggleMethod() {
+        const panel = document.getElementById('methodPanel');
+        const btn = document.getElementById('methodToggle');
+        panel.classList.toggle('visible');
+        btn.classList.toggle('active');
+    }
+
+    function updateMethodPanel() {
+        const data = methodData[currentStage];
+        const html = `
+            <div class="method-block">
+                <h4>Этап урока (ФГОС)</h4>
+                <p><strong>${data.stage}</strong></p>
+            </div>
+            <div class="method-block">
+                <h4>Тайминг</h4>
+                <p>${data.time}</p>
+            </div>
+            <div class="method-block">
+                <h4>Формируемые УУД</h4>
+                <div>${data.uud.map(u => `<span class="tag">${u}</span>`).join('')}</div>
+            </div>
+            <div class="method-block">
+                <h4>Действия учителя</h4>
+                <p>${data.script}</p>
+            </div>
+        `;
+        document.getElementById('methodContent').innerHTML = html;
+    }
+
+    // === ИНТЕРАКТИВ: СОРТИРОВКА ФАКТОРОВ ===
+    function renderChips() {
+        const container = document.getElementById('chipContainer');
+        container.innerHTML = '';
+        // Перемешиваем
+        const shuffled = [...factors].sort(() => Math.random() - 0.5);
+        shuffled.forEach((f, i) => {
+            const chip = document.createElement('div');
+            chip.className = 'chip';
+            chip.textContent = f.text;
+            chip.dataset.type = f.type;
+            chip.dataset.id = i;
+            chip.onclick = () => selectChip(chip);
+            container.appendChild(chip);
+        });
+    }
+
+    function selectChip(chip) {
+        if (chip.classList.contains('correct') || chip.classList.contains('wrong')) return;
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+        selectedChip = chip;
+    }
+
+    function dropChip(colType) {
+        if (!selectedChip) return;
+        
+        const isCorrect = selectedChip.dataset.type === colType;
+        const targetList = document.getElementById('list-' + colType);
+        
+        const newChip = document.createElement('div');
+        newChip.className = 'chip ' + (isCorrect ? 'correct' : 'wrong');
+        newChip.textContent = selectedChip.textContent;
+        targetList.appendChild(newChip);
+
+        selectedChip.style.display = 'none';
+        selectedChip = null;
+    }
+
+    // === ИНТЕРАКТИВ: ВЕСЫ БАЛАНСА ===
+    function setSlider(type, val) {
+        if (type === 'int') intVal = val;
+        else extVal = val;
+        updateSlidersUI();
+        updateBalance();
+    }
+
+    function updateSlidersUI() {
+        document.querySelectorAll('#slider-int .step-btn').forEach(b => {
+            b.classList.toggle('active', parseInt(b.dataset.val) === intVal);
+        });
+        document.querySelectorAll('#slider-ext .step-btn').forEach(b => {
+            b.classList.toggle('active', parseInt(b.dataset.val) === extVal);
+        });
+    }
+
+    function updateBalance() {
+        // Формула безопасности: (Внутренний + Внешний) / 6 * 100
+        const score = ((intVal + extVal) / 6) * 100;
+        const fill = document.getElementById('balanceFill');
+        const msg = document.getElementById('feedbackMsg');
+        
+        fill.style.width = score + '%';
+        
+        if (score >= 66) {
+            fill.style.background = 'var(--success)';
+            msg.className = 'feedback-msg show good';
+            msg.innerHTML = '✅ <strong>Отлично!</strong> Баланс соблюдён. Риск минимизирован.';
+        } else if (score >= 33) {
+            fill.style.background = 'var(--accent)';
+            msg.className = 'feedback-msg show good';
+            msg.style.background = '#FFF7ED'; msg.style.color = '#9A3412'; msg.style.borderColor = '#FDBA74';
+            msg.innerHTML = '⚠️ <strong>Внимание!</strong> Требуется компенсация. Измените один из факторов.';
+        } else {
+            fill.style.background = 'var(--danger)';
+            msg.className = 'feedback-msg show bad';
+            msg.innerHTML = '❌ <strong>Критическая ошибка!</strong> Закон компенсации нарушен. Высокий риск ЧП.';
+        }
+    }
+</script>
+
+</body>
+</html>

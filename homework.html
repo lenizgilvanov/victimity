@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Домашнее задание | ОБЗР</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #F4F6F9;
+            --surface: #FFFFFF;
+            --primary: #1E3A8A;
+            --primary-light: #EFF6FF;
+            --accent: #EA580C;
+            --accent-light: #FFF7ED;
+            --success: #059669;
+            --success-light: #ECFDF5;
+            --danger: #DC2626;
+            --danger-light: #FEF2F2;
+            --text-main: #111827;
+            --text-sec: #4B5563;
+            --border: #E5E7EB;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --radius: 12px;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+
+        .top-bar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+        .top-bar h1 { 
+            font-size: 1.2rem; 
+            font-weight: 700; 
+            color: var(--primary); 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        .top-bar h1 span.badge { 
+            background: var(--accent); 
+            color: white; 
+            font-size: 0.7rem; 
+            padding: 4px 8px; 
+            border-radius: 20px; 
+            font-weight: 600; 
+            text-transform: uppercase; 
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 24px;
+            width: 100%;
+            flex: 1;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 32px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        p {
+            line-height: 1.6;
+            color: var(--text-sec);
+            margin-bottom: 16px;
+        }
+
+        .level-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .level-card {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: center;
+        }
+        .level-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        .level-card.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        .level-card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+        .level-card p {
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: 0.2s;
+            -webkit-appearance: none;
+            appearance: none;
+            background: var(--surface);
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .factor-input-group {
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .factor-input-group label {
+            color: var(--primary);
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .factor-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .factor-input {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .factor-number {
+            background: var(--primary);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .factor-input input {
+            flex: 1;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            touch-action: manipulation;
+            width: 100%;
+            margin-top: 16px;
+        }
+        .btn:hover {
+            background: #1E40AF;
+            transform: translateY(-1px);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        .btn-outline:hover {
+            background: var(--primary-light);
+        }
+
+        .result-box {
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-top: 24px;
+            display: none;
+        }
+        .result-box.show {
+            display: block;
+            animation: fadeUp 0.4s ease-out;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-box.success {
+            background: var(--success-light);
+            border: 2px solid var(--success);
+        }
+        .result-box.error {
+            background: var(--danger-light);
+            border: 2px solid var(--danger);
+        }
+        .result-box h3 {
+            margin-bottom: 12px;
+        }
+        .result-box.success h3 {
+            color: var(--success);
+        }
+        .result-box.error h3 {
+            color: var(--danger);
+        }
+
+        .score {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 16px 0;
+        }
+        .result-box.success .score {
+            color: var(--success);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 16px;
+            }
+            .card {
+                padding: 20px;
+            }
+            .level-selector {
+                grid-template-columns: 1fr;
+            }
+            h2 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <h1>Домашнее задание <span class="badge">ОБЗР</span></h1>
+</div>
+
+<div class="container">
+
+    <!-- ЭКРАН 1: ВЫБОР УРОВНЯ -->
+    <div id="screen1" class="card">
+        <h2>Выберите уровень задания</h2>
+        <p>Домашнее задание дифференцированное. Выберите уровень сложности, соответствующий вашим возможностям.</p>
+        
+        <div class="level-selector">
+            <div class="level-card" onclick="selectLevel('basic', this)">
+                <h4>📚 Базовый уровень</h4>
+                <p>Выписать 5 внутренних и 5 внешних факторов виктимности для ситуации «Поход в лес»</p>
+            </div>
+            <div class="level-card" onclick="selectLevel('advanced', this)">
+                <h4>🚀 Продвинутый уровень</h4>
+                <p>Составить «Карту компенсации рисков» для вашего ежедневного пути из школы домой</p>
+            </div>
+        </div>
+
+        <button class="btn" id="btnContinue" onclick="goToForm()" disabled>Продолжить ➔</button>
+    </div>
+
+    <!-- ЭКРАН 2: ФОРМА (БАЗОВЫЙ УРОВЕНЬ) -->
+    <div id="screen2" class="card hidden">
+        <h2>Базовый уровень: Факторы виктимности</h2>
+        <p><strong>Ситуация:</strong> Вы собираетесь в поход в лес на выходные. Определите 5 внутренних (предрасположений) и 5 внешних (предпосылок) факторов виктимности для этой ситуации.</p>
+
+        <div class="form-group">
+            <label>Ваши ФИО *</label>
+            <input type="text" id="studentName" placeholder="Иванов Иван Иванович" required>
+        </div>
+
+        <div class="factor-input-group">
+            <label>🧍 Внутренние факторы (предрасположения)</label>
+            <div class="factor-inputs">
+                <div class="factor-input">
+                    <div class="factor-number">1</div>
+                    <input type="text" class="int-factor" placeholder="Например: Физическая подготовка">
+                </div>
+                <div class="factor-input">
+                    <div class="factor-number">2</div>
+                    <input type="text" class="int-factor" placeholder="Например: Знание местности">
+                </div>
+                <div class="factor-input">
+                    <div class="factor-number">3</div>
+                    <input type="text" class="int-factor" placeholder="Например: Состояние здоровья">
+                </div>
+                <div class="factor-input">
+                    <div class="factor-number">4</div>
+                    <input type="text" class="int-factor" placeholder="Например: Опыт выживания">
+                </div>
+                <div class="factor-input">
+                    <div class="factor-number">5</div>
+                    <input type="text" class="int-factor" placeholder="Например: Экипировка">
+                </div>
+            </div>
+        </div>
+
+        <div class="factor-input-group">
+            <label>🌍 Внешние факторы (предпосылки)</label>
+            <div class="factor-inputs">
+                <div class="factor-input">
+                    <div class="factor-number">1</div>
+                    <input type="text" class="ext-factor" placeholder="Например: Погода">
+                </div>
+                <div class="factor-input">
+                    <div class="factor-number">2</div>
+                    <input type="text" class="ext-factor" placeholder="Например: Рельеф местности">
+                </div>
+                <div class="factor-input">
+                    <div class="factor-number">3</div>
+                    <input type="text" class="ext-factor" placeholder="Например: Наличие диких животных">
+                </div>
+                <div class="factor-input">
+                    <div class="factor-number">4</div>
+                    <input type="text" class="ext-factor" placeholder="Например: Удаленность от цивилизации">
+                </div>
+                <div class="factor-input">
+                    <div class="factor-number">5</div>
+                    <input type="text" class="ext-factor" placeholder="Например: Время года">
+                </div>
+            </div>
+        </div>
+
+        <button class="btn" onclick="checkBasicAnswer()">Проверить и отправить ответ</button>
+        <button class="btn btn-outline" onclick="backToLevel()">← Назад к выбору уровня</button>
+    </div>
+
+    <!-- ЭКРАН 3: ФОРМА (ПРОДВИНУТЫЙ УРОВЕНЬ) -->
+    <div id="screen3" class="card hidden">
+        <h2>Продвинутый уровень: Карта компенсации рисков</h2>
+        <p><strong>Задание:</strong> Опишите ваш ежедневный путь из школы домой. Для каждого этапа пути определите внутренние и внешние факторы риска и предложите меры компенсации по закону баланса.</p>
+
+        <div class="form-group">
+            <label>Ваши ФИО *</label>
+            <input type="text" id="studentNameAdv" placeholder="Иванов Иван Иванович" required>
+        </div>
+
+        <div class="form-group">
+            <label>Описание пути и карта рисков *</label>
+            <textarea id="riskMap" placeholder="Пример:&#10;&#10;Этап 1: Выход из школы (15:00)&#10;- Внутренний фактор: Усталость после уроков (высокий)&#10;- Внешний фактор: Оживленная дорога (опасный)&#10;- Компенсация: Иду только по пешеходному переходу, не отвлекаюсь на телефон&#10;&#10;Этап 2: Путь через парк&#10;- Внутренний фактор: ...&#10;- Внешний фактор: ...&#10;- Компенсация: ..."></textarea>
+        </div>
+
+        <button class="btn" onclick="submitAdvancedAnswer()">Отправить на проверку</button>
+        <button class="btn btn-outline" onclick="backToLevel()">← Назад к выбору уровня</button>
+    </div>
+
+    <!-- ЭКРАН 4: РЕЗУЛЬТАТ -->
+    <div id="screen4" class="card hidden">
+        <div id="resultContent"></div>
+        <button class="btn" onclick="resetForm()">Выполнить другое задание</button>
+    </div>
+
+</div>
+
+<script>
+    // === НАСТРОЙКИ (ЗАМЕНИ НА СВОИ) ===
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz.../exec'; // Замени на свой URL
+    const TELEGRAM_BOT_TOKEN = ''; // Опционально: токен бота
+    const TELEGRAM_CHAT_ID = ''; // Опционально: ID чата
+
+    let selectedLevel = null;
+
+    // === ВЫБОР УРОВНЯ ===
+    function selectLevel(level, element) {
+        selectedLevel = level;
+        document.querySelectorAll('.level-card').forEach(c => c.classList.remove('selected'));
+        element.classList.add('selected');
+        document.getElementById('btnContinue').disabled = false;
+    }
+
+    function goToForm() {
+        if (!selectedLevel) return;
+        
+        document.getElementById('screen1').classList.add('hidden');
+        
+        if (selectedLevel === 'basic') {
+            document.getElementById('screen2').classList.remove('hidden');
+        } else {
+            document.getElementById('screen3').classList.remove('hidden');
+        }
+    }
+
+    function backToLevel() {
+        document.getElementById('screen2').classList.add('hidden');
+        document.getElementById('screen3').classList.add('hidden');
+        document.getElementById('screen1').classList.remove('hidden');
+        selectedLevel = null;
+        document.querySelectorAll('.level-card').forEach(c => c.classList.remove('selected'));
+        document.getElementById('btnContinue').disabled = true;
+    }
+
+    // === ПРОВЕРКА БАЗОВОГО УРОВНЯ ===
+    function checkBasicAnswer() {
+        const name = document.getElementById('studentName').value.trim();
+        const intFactors = Array.from(document.querySelectorAll('.int-factor')).map(i => i.value.trim());
+        const extFactors = Array.from(document.querySelectorAll('.ext-factor')).map(i => i.value.trim());
+
+        // Валидация
+        if (!name) {
+            alert('Пожалуйста, введите ваши ФИО');
+            return;
+        }
+
+        const emptyInt = intFactors.filter(f => !f).length;
+        const emptyExt = extFactors.filter(f => !f).length;
+
+        if (emptyInt > 0 || emptyExt > 0) {
+            alert(`Пожалуйста, заполните все факторы. Пропущено: ${emptyInt} внутренних и ${emptyExt} внешних.`);
+            return;
+        }
+
+        // Автоматическая проверка (по ключевым словам)
+        const intKeywords = ['подготовк', 'здоровь', 'опыт', 'знани', 'экипировк', 'снаряжен', 'усталост', 'стресс', 'возраст', 'пол', 'физическ', 'психологическ'];
+        const extKeywords = ['погод', 'рельеф', 'местност', 'животн', 'время', 'сезон', 'удаленн', 'освещенн', 'люди', 'связь', 'троп', 'дорог'];
+
+        let intScore = 0;
+        let extScore = 0;
+
+        intFactors.forEach(f => {
+            if (intKeywords.some(k => f.toLowerCase().includes(k))) {
+                intScore++;
+            }
+        });
+
+        extFactors.forEach(f => {
+            if (extKeywords.some(k => f.toLowerCase().includes(k))) {
+                extScore++;
+            }
+        });
+
+        const totalScore = intScore + extScore;
+        const maxScore = 10;
+        const percentage = Math.round((totalScore / maxScore) * 100);
+
+        // Формируем данные для отправки
+        const data = {
+            timestamp: new Date().toISOString(),
+            name: name,
+            level: 'Базовый',
+            intFactors: intFactors.join('; '),
+            extFactors: extFactors.join('; '),
+            riskMap: '',
+            score: percentage,
+            autoCheck: `Внутренние: ${intScore}/5, Внешние: ${extScore}/5`
+        };
+
+        // Показываем результат
+        showResult(percentage, intScore, extScore, data);
+        
+        // Отправляем в Google Sheets
+        sendToGoogleSheets(data);
+    }
+
+    // === ОТПРАВКА ПРОДВИНУТОГО УРОВНЯ ===
+    function submitAdvancedAnswer() {
+        const name = document.getElementById('studentNameAdv').value.trim();
+        const riskMap = document.getElementById('riskMap').value.trim();
+
+        if (!name) {
+            alert('Пожалуйста, введите ваши ФИО');
+            return;
+        }
+
+        if (!riskMap || riskMap.length < 50) {
+            alert('Пожалуйста, подробно опишите карту рисков (минимум 50 символов)');
+            return;
+        }
+
+        const data = {
+            timestamp: new Date().toISOString(),
+            name: name,
+            level: 'Продвинутый',
+            intFactors: '',
+            extFactors: '',
+            riskMap: riskMap,
+            score: 'На проверке',
+            autoCheck: 'Требуется ручная проверка преподавателем'
+        };
+
+        // Показываем результат
+        showAdvancedResult(data);
+        
+        // Отправляем в Google Sheets
+        sendToGoogleSheets(data);
+    }
+
+    // === ОТПРАВКА В GOOGLE SHEETS ===
+    async function sendToGoogleSheets(data) {
+        try {
+            // Отправка через Google Apps Script
+            const response = await fetch('https://script.google.com/macros/s/AKfycbzmlyxLeJrSDS6XV2qzHgBrnUkqunXQopXzjlV-0kw6oQTWX7mR2IA-0g5qf7Hld-VJvw/exec', {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+
+            console.log('Данные отправлены в Google Sheets');
+
+            // Опционально: дублирование в Telegram
+            if (TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID) {
+                sendToTelegram(data);
+            }
+
+        } catch (error) {
+            console.error('Ошибка отправки:', error);
+        }
+    }
+
+    // === ОТПРАВКА В TELEGRAM (ОПЦИОНАЛЬНО) ===
+    async function sendToTelegram(data) {
+        const message = `📚 *Новое домашнее задание*\n\n` +
+                       `*Ученик:* ${data.name}\n` +
+                       `*Уровень:* ${data.level}\n` +
+                       `*Время:* ${new Date(data.timestamp).toLocaleString('ru-RU')}\n\n` +
+                       (data.level === 'Базовый' 
+                           ? `*Внутренние факторы:*\n${data.intFactors}\n\n*Внешние факторы:*\n${data.extFactors}\n\n*Автопроверка:* ${data.score}%`
+                           : `*Карта рисков:*\n${data.riskMap.substring(0, 200)}...`);
+
+        try {
+            await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: message,
+                    parse_mode: 'Markdown'
+                })
+            });
+            console.log('Уведомление отправлено в Telegram');
+        } catch (error) {
+            console.error('Ошибка отправки в Telegram:', error);
+        }
+    }
+
+    // === ПОКАЗ РЕЗУЛЬТАТА (БАЗОВЫЙ) ===
+    function showResult(percentage, intScore, extScore, data) {
+        document.getElementById('screen2').classList.add('hidden');
+        document.getElementById('screen4').classList.remove('hidden');
+
+        let resultClass = percentage >= 70 ? 'success' : 'error';
+        let resultText = percentage >= 70 
+            ? 'Отличная работа! Вы правильно определили факторы виктимности.' 
+            : 'Хорошая попытка! Но некоторые факторы требуют уточнения.';
+
+        const html = `
+            <div class="result-box ${resultClass} show">
+                <h3>${percentage >= 70 ? '✅ Задание выполнено!' : '⚠️ Задание отправлено на проверку'}</h3>
+                <div class="score">${percentage}%</div>
+                <p>${resultText}</p>
+                <p style="margin-top: 16px;"><strong>Результат автопроверки:</strong></p>
+                <ul style="margin-left: 20px; line-height: 1.8;">
+                    <li>Внутренние факторы: ${intScore}/5 распознано</li>
+                    <li>Внешние факторы: ${extScore}/5 распознано</li>
+                </ul>
+                <p style="margin-top: 16px; font-size: 0.9rem; color: var(--text-sec);">
+                    Ваши ответы отправлены преподавателю. Окончательная оценка будет выставлена после проверки.
+                </p>
+            </div>
+        `;
+
+        document.getElementById('resultContent').innerHTML = html;
+    }
+
+    // === ПОКАЗ РЕЗУЛЬТАТА (ПРОДВИНУТЫЙ) ===
+    function showAdvancedResult(data) {
+        document.getElementById('screen3').classList.add('hidden');
+        document.getElementById('screen4').classList.remove('hidden');
+
+        const html = `
+            <div class="result-box success show">
+                <h3>✅ Задание отправлено!</h3>
+                <p>Ваша карта компенсации рисков успешно отправлена преподавателю на проверку.</p>
+                <p style="margin-top: 16px; font-size: 0.9rem; color: var(--text-sec);">
+                    Преподаватель проверит ваш ответ и выставит оценку. Обычно это занимает 1-2 дня.
+                </p>
+            </div>
+        `;
+
+        document.getElementById('resultContent').innerHTML = html;
+    }
+
+    // === СБРОС ФОРМЫ ===
+    function resetForm() {
+        document.getElementById('screen4').classList.add('hidden');
+        document.getElementById('screen1').classList.remove('hidden');
+        
+        // Очищаем формы
+        document.getElementById('studentName').value = '';
+        document.getElementById('studentNameAdv').value = '';
+        document.getElementById('riskMap').value = '';
+        document.querySelectorAll('.int-factor, .ext-factor').forEach(i => i.value = '');
+        
+        selectedLevel = null;
+        document.querySelectorAll('.level-card').forEach(c => c.classList.remove('selected'));
+        document.getElementById('btnContinue').disabled = true;
+    }
+</script>
+
+</body>
+</html>
